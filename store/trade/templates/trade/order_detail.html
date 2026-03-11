@@ -1,0 +1,70 @@
+{% extends 'trade/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <!-- En-tête de la commande -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
+            <h2 class="mb-2 mb-md-0"> Commande #{{ order.id }}</h2>
+            <span class="text-muted">{{ order.created_at|date:"d/m/Y H:i" }}</span>
+        </div>
+
+        <hr>
+
+        <!-- Informations client et total -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h5>Informations client</h5>
+                <p><strong>Nom :</strong> {{ order.full_name }}</p>
+                <p><strong>Email :</strong>
+                    {% if order.email %}
+                        {{ order.email }}
+                    {% elif order.user %}
+                        {{ order.user.email }}
+                    {% else %}
+                        Non renseigné
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <h5>Total commande</h5>
+                <p class="display-6 fw-bold text-success">{{ order.total_amount }} $</p>
+            </div>
+        </div>
+
+        <!-- Liste des produits -->
+        <h4 class="mb-3">Produits</h4>
+        <ul class="list-group mb-4">
+            {% for item in order.items.all %}
+            <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div class="d-flex align-items-center mb-2 mb-md-0">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="rounded me-3" style="width:60px; height:60px; object-fit:cover;">
+                    {% else %}
+                        <div class="bg-secondary rounded me-3 d-flex justify-content-center align-items-center" style="width:60px; height:60px;">
+                            <span class="text-white">N/A</span>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <strong>{{ item.product.name }}</strong><br>
+                        <span class="badge bg-primary">x{{ item.quantity }}</span>
+                    </div>
+                </div>
+                <div>
+                    <span class="fw-bold text-success">{{ item.total_price }} $</span>
+                </div>
+            </li>
+            {% empty %}
+            <li class="list-group-item">Aucun produit dans cette commande.</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Bouton retour -->
+        <div class="text-center mt-3">
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-bar-left"></i>Retour 
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
